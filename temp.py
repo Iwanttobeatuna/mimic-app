@@ -75,6 +75,61 @@ def plot_feature_label(features, label1, label2, label3, y_label, stat='mean'):
 ## Bootstrap template
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP]) 
 
+
+index_page = html.Div([
+    dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("UMAP analysis", href="/page-1")),
+        dbc.NavItem(dbc.NavLink("TSNE analysis", href="/page-2")),
+    ],
+    brand="MIMIC Visualization",
+    brand_href="/",
+    color="primary",
+    dark=True,),
+
+    dbc.Container([
+
+        dbc.Col([
+
+            dbc.Row([html.H5(children = "UMAP plots", style={'text-align': 'center'}),]),
+
+            dbc.Row([
+            html.Div([
+            dcc.Graph(
+                id='crossfilter-indicator-scatter',
+                figure = fig_2d,
+                hoverData={'points': [{'customdata': [200001]}]}
+            )])]),
+
+            dbc.Row([html.H5(children = "TSNE plots", style={'text-align': 'center'}),]),
+
+            dbc.Row([
+            html.Div([
+            dcc.Graph(
+                id='crossfilter-indicator-scatter',
+                figure = fig_tsne,
+                hoverData={'points': [{'customdata': [200001]}]}
+            )])]),
+            
+        
+        ], width= 6, sm = 12, md = 12, lg = 6, xl = 6),
+
+        
+        
+        dbc.Col([
+
+            dbc.Row([
+                html.H5(children = "Updates", style={'text-align': 'center'}),
+
+                html.p(children="(14 Feb: Updated UMAP and TSNE plots)")
+             ]),
+            
+        
+        ], width= 6, sm = 12, md = 12, lg = 6, xl = 6),
+
+    ]),
+])
+
 app.layout = dbc.Container([
 
     html.Br(),

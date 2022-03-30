@@ -22,37 +22,6 @@ df_umap_2_describe = df_umap_2.describe()
 df_umap_3_describe = df_umap_3.describe()
 
 
-
-def find_mean_median(df, features):
-    mean_df = df.loc[['mean'], df.columns.to_series().str.contains(features)]
-    median_df = df.loc[['50%'], df.columns.to_series().str.contains(features)]
-    mean_Transpose = mean_df.transpose()
-    median_Transpose = median_df.transpose()
-    mean_median_Transpose = pd.merge(mean_Transpose, median_Transpose, left_index=True, right_index=True)
-    mean_median_Transpose.columns = ['mean', 'median']
-    return mean_median_Transpose
-
-def plot_feature_label(features, label1, label2, label3, y_label, stat='mean'):
-    mean_median_1 = find_mean_median(label1, features)
-    mean_median_2 = find_mean_median(label2, features)
-    mean_median_3 = find_mean_median(label3, features)
-    ## plot mean for different labels
-    if stat == 'mean':
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=mean_median_1.index, y=mean_median_1['mean'], name = 'label 1' , line=dict(color='firebrick', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['mean'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['mean'], name = 'label 3' ,line=dict(color='green', width=2)))
-        fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' mean')
-    ## plot median for different labels
-    else:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=mean_median_1.index, y=mean_median_1['median'], name = 'label 1' ,line=dict(color='firebrick', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['median'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['median'], name = 'label 3' ,line=dict(color='green', width=2)))
-        fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' median')
-    
-    return fig
-
 ## sampling function for each label
 def sample_plot(df_label, df_describe, n, features, y_label):
     sample = df_label.sample(n)
@@ -62,18 +31,37 @@ def sample_plot(df_label, df_describe, n, features, y_label):
     ## mean median
     mean_df = df_describe.loc[['mean'], df_describe.columns.to_series().str.contains(features)]
     median_df = df_describe.loc[['50%'], df_describe.columns.to_series().str.contains(features)]
+    # var_df = df_describe.loc[['std'], df_describe.columns.to_series().str.contains(features)]
     mean_Transpose = mean_df.transpose()
-    median_Transpose = median_df.transpose()
+    median_Transpose = median_df.transpose()    
+    # var_Transpose = var_df.transpose()
     ## merge the two dataframes
     mean_median_Transpose = pd.merge(mean_Transpose, median_Transpose, left_index=True, right_index=True)
+    
+    # mean_median_Transpose = pd.merge(mean_median_Transpose, var_Transpose, left_index=True, right_index=True)
     mean_median_Transpose.columns = ['mean', 'median']
 
     fig = go.Figure()
     for i in range(len(transpose.columns)):
-        fig.add_trace(go.Scatter(x=transpose.index, y=transpose.iloc[:,i], name=transpose.columns[i], line = dict(width=2, dash='dash')))
+        fig.add_trace(go.Scatter(x=transpose.index, y=transpose.iloc[:,i], name=transpose.columns[i], line = dict(width=0.5, color="#aaaaaa")))
     fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['mean'], name='mean', line=dict(color='firebrick', width=2)))
     fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['median'], name='median', line=dict(color='royalblue', width=2)))
+    # fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['std'], name='std', line=dict(color='green', width=2)))
     fig.update_layout(xaxis_title='Time', yaxis_title=y_label)
+    if features=='heart_rate':
+        fig.update_layout(yaxis_range=[80,100])
+    if features=='respiratory_rate':
+        fig.update_layout(yaxis_range=[15,30])
+    if features=='hematocrit':
+        fig.update_layout(yaxis_range=[28,32])
+    if features=='creatinine':
+        fig.update_layout(yaxis_range=[0.8,1.8])
+    if features=='mean_blood_pressure':
+        fig.update_layout(yaxis_range=[70,120])
+    if features=='fraction_inspired_oxygen':
+        fig.update_layout(yaxis_range=[0.0, 0.8])
+    if features=='sodium':
+        fig.update_layout(yaxis_range=[135, 145])
     return fig
 
 

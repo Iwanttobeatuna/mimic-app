@@ -61,11 +61,15 @@ def sample_plot(df_label, df_describe, n, features, y_label):
     ## mean median
     mean_df = df_describe.loc[['mean'], df_describe.columns.to_series().str.contains(features)]
     median_df = df_describe.loc[['50%'], df_describe.columns.to_series().str.contains(features)]
+    
     mean_Transpose = mean_df.transpose()
     median_Transpose = median_df.transpose()
     ## merge the two dataframes
     mean_median_Transpose = pd.merge(mean_Transpose, median_Transpose, left_index=True, right_index=True)
     mean_median_Transpose.columns = ['mean', 'median']
+
+    ## find variance
+
 
     fig = go.Figure()
     for i in range(len(transpose.columns)):

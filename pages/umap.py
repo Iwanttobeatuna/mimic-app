@@ -83,16 +83,43 @@ def plot_feature_label(features, label1, label2, label3, y_label, stat='mean'):
         fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['mean'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
         fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['mean'], name = 'label 3' ,line=dict(color='green', width=2)))
         fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' mean')
+        if features=='heart_rate':
+            fig.update_layout(yaxis_range=[80,100])
+        if features=='respiratory_rate':
+            fig.update_layout(yaxis_range=[15,30])
+        if features=='hematocrit':
+            fig.update_layout(yaxis_range=[28,32])
+        if features=='creatinine':
+            fig.update_layout(yaxis_range=[0.8,1.8])
+        if features=='mean_blood_pressure':
+            fig.update_layout(yaxis_range=[70,120])
+        if features=='fraction_inspired_oxygen':
+            fig.update_layout(yaxis_range=[0.0, 0.8])
+        if features=='sodium':
+            fig.update_layout(yaxis_range=[135, 145])
     ## plot median for different labels
     else:
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=mean_median_1.index, y=mean_median_1['median'], name = 'label 1' ,line=dict(color='firebrick', width=2)))
         fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['median'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
         fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['median'], name = 'label 3' ,line=dict(color='green', width=2)))
+        if features=='heart_rate':
+            fig.update_layout(yaxis_range=[80,100])
+        if features=='respiratory_rate':
+            fig.update_layout(yaxis_range=[15,30])
+        if features=='hematocrit':
+            fig.update_layout(yaxis_range=[28,32])
+        if features=='mean_blood_pressure':
+            fig.update_layout(yaxis_range=[70,120])
+        if features=='creatinine':
+            fig.update_layout(yaxis_range=[0.8,1.8])
+        if features=='fraction_inspired_oxygen':
+            fig.update_layout(yaxis_range=[0.0, 0.8])
+        if features=='sodium':
+            fig.update_layout(yaxis_range=[135, 145])
         fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' median')
     
     return fig
-
 layout = html.Div([
 
     dbc.NavbarSimple(

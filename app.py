@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from pages import tsne, umap, umap_sample, umap_sample10, umap_sample20
+from pages import tsne, umap, umap_sample, umap_sample10, umap_sample20, outlier_overview, experiments
 
 ## umap csv
 df = pd.read_csv('umap_appended.csv')
@@ -50,28 +50,6 @@ fig_compare = px.scatter(
     hover_data=['icustay_id'],
     title = "TsNE labels on UMAP plots"
 )
-## sampling function for each label
-def sample_plot(df_label, df_describe, n, features, y_label):
-    sample = df_label.sample(n)
-    new_df = sample.loc[:, sample.columns.to_series().str.contains(features)]
-    transpose  = new_df.transpose()
-    transpose.columns = ['sample'+'_{}'.format(i) for i in range(len(transpose.columns))]
-    ## mean median
-    mean_df = df_describe.loc[['mean'], df_describe.columns.to_series().str.contains(features)]
-    median_df = df_describe.loc[['50%'], df_describe.columns.to_series().str.contains(features)]
-    mean_Transpose = mean_df.transpose()
-    median_Transpose = median_df.transpose()
-    ## merge the two dataframes
-    mean_median_Transpose = pd.merge(mean_Transpose, median_Transpose, left_index=True, right_index=True)
-    mean_median_Transpose.columns = ['mean', 'median']
-
-    fig = go.Figure()
-    for i in range(len(transpose.columns)):
-        fig.add_trace(go.Scatter(x=transpose.index, y=transpose.iloc[:,i], name=transpose.columns[i], line = dict(width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['mean'], name='mean', line=dict(color='firebrick', width=2)))
-    fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['median'], name='median', line=dict(color='royalblue', width=2)))
-    fig.update_layout(xaxis_title='Time', yaxis_title=y_label)
-    fig.show()
     
 def bar_plot(df):
     s = df['labels'].value_counts() 
@@ -86,36 +64,6 @@ def bar_plot(df):
     
     return fig_bar
 
-def find_mean_median(df, features):
-    mean_df = df.loc[['mean'], df.columns.to_series().str.contains(features)]
-    median_df = df.loc[['50%'], df.columns.to_series().str.contains(features)]
-    mean_Transpose = mean_df.transpose()
-    median_Transpose = median_df.transpose()
-    mean_median_Transpose = pd.merge(mean_Transpose, median_Transpose, left_index=True, right_index=True)
-    mean_median_Transpose.columns = ['mean', 'median']
-    return mean_median_Transpose
-
-def plot_feature_label(features, label1, label2, label3, y_label, stat='mean'):
-    mean_median_1 = find_mean_median(label1, features)
-    mean_median_2 = find_mean_median(label2, features)
-    mean_median_3 = find_mean_median(label3, features)
-    ## plot mean for different labels
-    if stat == 'mean':
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=mean_median_1.index, y=mean_median_1['mean'], name = 'label 1' , line=dict(color='firebrick', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['mean'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['mean'], name = 'label 3' ,line=dict(color='green', width=2)))
-        fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' mean')
-    ## plot median for different labels
-    else:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=mean_median_1.index, y=mean_median_1['median'], name = 'label 1' ,line=dict(color='firebrick', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_2.index, y=mean_median_2['median'], name = 'label 2' ,line=dict(color='royalblue', width=2)))
-        fig.add_trace(go.Scatter(x=mean_median_3.index, y=mean_median_3['median'], name = 'label 3' ,line=dict(color='green', width=2)))
-        fig.update_layout(xaxis_title='Time', yaxis_title=y_label, title=y_label+' median')
-    
-    return fig
-
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
@@ -128,10 +76,27 @@ app.layout = html.Div([
 index_page = html.Div([
     dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Home", href="/")),
-        dbc.NavItem(dbc.NavLink("UMAP analysis", href="/page-1")),
+        dbc.DropdownMenu(
+            children=[
+                dbc.DropdownMenuItem("Overview", href="/"),
+                dbc.DropdownMenuItem("Overview(Outliers Removed)", href="/outlier-overview"),
+            ],
+            nav=True,
+            in_navbar=True,
+            label="Home",
+        ),
+        dbc.DropdownMenu(
+            children=[
+                dbc.DropdownMenuItem("Mean/Median Analysis", href="/page-1"),
+                dbc.DropdownMenuItem("Mean/Median Analysis (outliers removed)", href="#"),
+            ],
+            nav=True,
+            in_navbar=True,
+            label="UMAP analysis",
+        ),
         dbc.NavItem(dbc.NavLink("TSNE analysis", href="/page-2")),
         dbc.NavItem(dbc.NavLink("UMAP sampling analysis", href="/page-3")),
+        dbc.NavItem(dbc.NavLink('Experiments', href='/page-4')),
     ],
     brand="MIMIC Visualization",
     brand_href="/",
@@ -233,11 +198,6 @@ index_page = html.Div([
     
     ]),
 
-    dbc.Row([
-                html.H5(children = "Updates", style={'text-align': 'center'}),
-
-                html.P(children="(14 Feb: Updated UMAP and TSNE plots)")
-    ]),
 
     ]),
 ])
@@ -253,6 +213,8 @@ def display_page(pathname):
         return tsne.layout
     elif pathname == '/page-3':
         return umap_sample.layout
+    elif pathname == '/page-4':
+        return experiments.layout
     elif pathname == '/':
         return index_page
     elif pathname == "/umap-sample-10":
@@ -261,6 +223,8 @@ def display_page(pathname):
         return umap_sample.layout
     elif pathname == '/umap-sample-20':
         return umap_sample20.layout
+    elif pathname == "/outlier-overview":
+        return outlier_overview.layout
     else:
         return "404"
     # You could also return a 404 "URL not found" page here

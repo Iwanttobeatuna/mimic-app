@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from pages import tsne, umap, umap_sample, umap_sample10, umap_sample20, outlier_overview, experiments
+from pages import tsne, umap, umap_sample, umap_sample10, umap_sample20, outlier_overview, experiments_7an, experiments_7av, experiments_7nv, experiments_7vv, umap_vv_sample, umap_vv_sample10, umap_vv_sample20, umap_nv_sample, umap_nv_sample10, umap_nv_sample20
 
 ## umap csv
 df = pd.read_csv('umap_appended.csv')
@@ -95,8 +95,17 @@ index_page = html.Div([
             label="UMAP analysis",
         ),
         dbc.NavItem(dbc.NavLink("TSNE analysis", href="/page-2")),
-        dbc.NavItem(dbc.NavLink("UMAP sampling analysis", href="/page-3")),
-        dbc.NavItem(dbc.NavLink('Experiments', href='/page-4')),
+        dbc.DropdownMenu(
+            children=[
+                dbc.DropdownMenuItem("Continuous: Valid", href="/page-3"),
+                dbc.DropdownMenuItem("Discrete: Valid", href="/page-4"),
+                dbc.DropdownMenuItem("Discrete: Normal", href="/page-5"),
+            ],
+            nav=True,
+            in_navbar=True,
+            label="UMAP Sampling",
+        ),
+        dbc.NavItem(dbc.NavLink('Experiments', href='/7vv')),
     ],
     brand="MIMIC Visualization",
     brand_href="/",
@@ -213,8 +222,6 @@ def display_page(pathname):
         return tsne.layout
     elif pathname == '/page-3':
         return umap_sample.layout
-    elif pathname == '/page-4':
-        return experiments.layout
     elif pathname == '/':
         return index_page
     elif pathname == "/umap-sample-10":
@@ -223,8 +230,33 @@ def display_page(pathname):
         return umap_sample.layout
     elif pathname == '/umap-sample-20':
         return umap_sample20.layout
+    elif pathname =='/page-4':
+        return umap_vv_sample.layout
+    elif pathname == "/umap-vv-sample-10":
+        return umap_vv_sample10.layout
+    elif pathname == "/umap-vv-sample-5":
+        return umap_vv_sample.layout
+    elif pathname == '/umap-vv-sample-20':
+        return umap_vv_sample20.layout
+    elif pathname=='/page-5':
+        return umap_nv_sample.layout
+    elif pathname == "/umap-nv-sample-10":
+        return umap_nv_sample10.layout
+    elif pathname == "/umap-nv-sample-5":
+        return umap_nv_sample.layout
+    elif pathname == '/umap-nv-sample-20':
+        return umap_nv_sample20.layout
+    
     elif pathname == "/outlier-overview":
         return outlier_overview.layout
+    elif pathname == "/7av":
+        return experiments_7av.layout
+    elif pathname =='/7vv':
+        return experiments_7vv.layout
+    elif pathname =='/7nv':
+        return experiments_7nv.layout
+    elif pathname =='/7an':
+        return experiments_7an.layout
     else:
         return "404"
     # You could also return a 404 "URL not found" page here

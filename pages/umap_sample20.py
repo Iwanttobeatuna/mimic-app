@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 ## umap csv
-df = pd.read_csv('umap_appended.csv')
+df = pd.read_csv('umap(rm)_appended.csv')
 
 ## list of features
 features_lst = ['heart_rate', 'respiratory_rate', 'hematocrit', 'creatinine', 'sodium', 'fraction_inspired_oxygen', 'mean_blood_pressure']
@@ -15,10 +15,8 @@ features_lst = ['heart_rate', 'respiratory_rate', 'hematocrit', 'creatinine', 's
 ## Split into dataframes based on labels (umap)
 df_umap_1 = df.loc[df['labels'] == 0]
 df_umap_2 = df.loc[df['labels'] == 1]
-df_umap_3 = df.loc[df['labels'] == 2]
 df_umap_1_describe = df_umap_1.describe()
 df_umap_2_describe = df_umap_2.describe()
-df_umap_3_describe = df_umap_3.describe()
 
 
 
@@ -69,7 +67,7 @@ def sample_plot(df_label, df_describe, n, features, y_label):
 
     fig = go.Figure()
     for i in range(len(transpose.columns)):
-        fig.add_trace(go.Scatter(x=transpose.index, y=transpose.iloc[:,i], name=transpose.columns[i], line = dict(width=2, dash='dash')))
+        fig.add_trace(go.Scatter(x=transpose.index, y=transpose.iloc[:,i], name=transpose.columns[i], line = dict(width=0.5, color="#aaaaaa")))
     fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['mean'], name='mean', line=dict(color='firebrick', width=2)))
     fig.add_trace(go.Scatter(x=mean_median_Transpose.index, y=mean_median_Transpose['median'], name='median', line=dict(color='royalblue', width=2)))
     fig.update_layout(xaxis_title='Time', yaxis_title=y_label)
@@ -176,7 +174,7 @@ layout = html.Div([
                 html.Div([dcc.Graph(figure = sample_plot(df_umap_1, df_umap_1_describe, 20, "sodium", "sodium"))],
                 style={'width': '100%', 'display': 'inline-block'})
             ]),
-        ],width=4, sm=4, md=4, lg=4),
+        ],width=6, sm=6, md=6, lg=6),
         
         
         dbc.Col([
@@ -230,60 +228,7 @@ layout = html.Div([
                 html.Div([dcc.Graph(figure = sample_plot(df_umap_2, df_umap_2_describe, 20, "sodium", "sodium"))],
                 style={'width': '100%', 'display': 'inline-block'})
             ]),
-        ],width=4, sm=4, md=4, lg=4),
-
-        dbc.Col([
-            
-            dbc.Row([
-
-                html.H5('Label 3', style={'textAlign': 'center'}),
-
-                html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "heart_rate", "heart_rate"))], 
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-               html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "respiratory_rate", "respiratory_rate"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-                html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "hematocrit", "hematocrit"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-                html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "fraction_inspired_oxygen", "fraction_inspired_oxygen"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-                html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "creatinine", "creatinine"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-               html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "mean_blood_pressure", "mean_blood_pressure"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-
-            dbc.Row([
-
-                
-                html.Div([dcc.Graph(figure = sample_plot(df_umap_3, df_umap_3_describe, 20, "sodium", "sodium"))],
-                style={'width': '100%', 'display': 'inline-block'})
-            ]),
-        ],width=4, sm=4, md=4, lg=4),
+        ],width=6, sm=6, md=6, lg=6),
     ]),
 
 ])
